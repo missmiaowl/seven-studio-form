@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <title>SEVEN Studio · 学员需求测评表</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'PingFang SC', 'Microsoft YaHei', 'Helvetica Neue', sans-serif;
+      background: #0e0e0e; color: #e8e8e8;
+      min-height: 100vh; padding: 32px 16px 60px;
+    }
+    .container { max-width: 720px; margin: 0 auto; }
+    .header { text-align: center; margin-bottom: 40px; padding-bottom: 28px; border-bottom: 1px solid #2a2a2a; }
+    .logo { font-size: 11px; letter-spacing: 4px; color: #666; text-transform: uppercase; margin-bottom: 12px; }
+    .title { font-size: 24px; font-weight: 700; color: #fff; letter-spacing: 1px; margin-bottom: 8px; }
+    .subtitle { font-size: 12px; color: #555; line-height: 1.9; }
+    .section { margin-bottom: 36px; }
+    .section-header { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; }
+    .section-tag { background: #c8a96e; color: #000; font-size: 10px; font-weight: 700; letter-spacing: 2px; padding: 3px 9px; border-radius: 2px; }
+    .section-title { font-size: 14px; font-weight: 600; color: #fff; }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
+    .form-group { display: flex; flex-direction: column; gap: 6px; }
+    label.field-label { font-size: 11px; color: #777; }
+    input[type="text"], input[type="tel"], textarea, select {
+      background: #1a1a1a; border: 1px solid #2e2e2e; border-radius: 6px;
+      color: #e8e8e8; font-size: 14px; padding: 10px 12px;
+      outline: none; font-family: inherit; width: 100%; -webkit-appearance: none;
+    }
+    input:focus, textarea:focus, select:focus { border-color: #c8a96e; }
+    textarea { resize: vertical; min-height: 72px; line-height: 1.6; }
+    select option { background: #1a1a1a; }
+    .options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .options-grid.col3 { grid-template-columns: 1fr 1fr 1fr; }
+    .options-grid.col1 { grid-template-columns: 1fr; }
+    .option-item {
+      display: flex; align-items: flex-start; gap: 10px;
+      background: #1a1a1a; border: 1px solid #2e2e2e; border-radius: 6px;
+      padding: 11px 13px; cursor: pointer;
+    }
+    .option-item input[type="checkbox"], .option-item input[type="radio"] {
+      width: 16px; height: 16px; margin-top: 2px; accent-color: #c8a96e; flex-shrink: 0;
+    }
+    .option-label { font-size: 13px; color: #ccc; line-height: 1.5; }
+    .option-label span { display: block; font-size: 11px; color: #555; margin-top: 2px; }
+    .direction-card { background: #141414; border: 1px solid #2a2a2a; border-radius: 8px; padding: 18px; margin-bottom: 14px; }
+    .direction-card-header { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; padding-bottom: 10px; border-bottom: 1px solid #222; }
+    .direction-card-header input[type="checkbox"] { width: 17px; height: 17px; accent-color: #c8a96e; flex-shrink: 0; }
+    .direction-name { font-size: 14px; font-weight: 600; color: #fff; }
+    .direction-desc { font-size: 11px; color: #555; margin-top: 2px; }
+    .direction-skills { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; }
+    .skill-item { display: flex; align-items: center; gap: 8px; font-size: 12px; color: #aaa; cursor: pointer; }
+    .skill-item input { width: 13px; height: 13px; accent-color: #c8a96e; flex-shrink: 0; }
+    .divider { border: none; border-top: 1px solid #1e1e1e; margin: 32px 0; }
+    .footer { margin-top: 40px; padding-top: 24px; border-top: 1px solid #2a2a2a; text-align: center; }
+    .footer-note { font-size: 12px; color: #444; margin-bottom: 22px; line-height: 1.9; }
+    .btn-group { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+    .btn { border: none; border-radius: 6px; padding: 13px 32px; font-size: 14px; font-weight: 700; cursor: pointer; letter-spacing: 1px; font-family: inherit; }
+    .btn-primary { background: #c8a96e; color: #000; }
+    .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+    #result-modal {
+      display: none; position: fixed; inset: 0; z-index: 1000;
+      background: rgba(0,0,0,0.92); flex-direction: column; align-items: center;
+      overflow-y: auto; padding: 20px 12px 48px; -webkit-overflow-scrolling: touch;
+    }
+    #result-modal.show { display: flex; }
+    .modal-tip { color: #c8a96e; font-size: 15px; font-weight: 600; text-align: center; margin-bottom: 8px; flex-shrink: 0; }
+    .modal-sub { color: #666; font-size: 12px; margin-bottom: 18px; text-align: center; flex-shrink: 0; line-height: 1.7; }
+    #result-img { width: 100%; max-width: 680px; border-radius: 8px; display: block; }
+    .modal-close { margin-top: 20px; padding: 11px 28px; background: transparent; border: 1px solid #444; color: #888; border-radius: 6px; font-size: 13px; cursor: pointer; flex-shrink: 0; font-family: inherit; }
+    @media (max-width: 520px) {
+      .form-row { grid-template-columns: 1fr; }
+      .options-grid { grid-template-columns: 1fr; }
+      .options-grid.col3 { grid-template-columns: 1fr 1fr; }
+      .direction-skills { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<div id="result-modal">
+  <div class="modal-tip">✅ 表单已生成！</div>
+  <div class="modal-sub">长按图片 → 保存到相册 → 发给老师<br>或截图也可以</div>
+  <img id="result-img" src="" alt="表单截图">
+  <button class="modal-close" onclick="document.getElementById('result-modal').classList.remove('show')">关闭 / 继续编辑</button>
+</div>
+
+<div class="container">
+  <div class="header">
+    <div class="logo">SEVEN Studio</div>
+    <div class="title">学员需求测评表</div>
+    <div class="subtitle">帮助我们了解你的音乐基础与学习目标，以便匹配最合适的课程方案<br>填写约 5 分钟，想到什么写什么即可</div>
+  </div>
+
+  <div class="section">
+    <div class="section-header"><span class="section-tag">A</span><span class="section-title">基本信息</span></div>
+    <div class="form-row">
+      <div class="form-group"><label class="field-label">姓名 / 昵称</label><input id="f-name" type="text" placeholder="怎么称呼你"></div>
+      <div class="form-group"><label class="field-label">联系电话（微信同号）</label><input id="f-tel" type="tel"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="field-label">年龄段</label>
+        <select id="f-age">
+          <option value="">请选择</option>
+          <option>15岁以下</option><option>15–18岁</option><option>19–25岁</option><option>26–35岁</option><option>36岁以上</option>
+        </select>
+      </div>
+      <div class="form-group"><label class="field-label">所在城市</label><input id="f-city" type="text"></div>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <div class="section">
+    <div class="section-header"><span class="section-tag">B</span><span class="section-title">音乐基础自评</span></div>
+    <div style="margin-bottom:16px;">
+      <div style="font-size:12px;color:#888;margin-bottom:8px;">有没有乐器基础？</div>
+      <div class="options-grid col1">
+        <label class="option-item"><input type="radio" name="instrument"><span class="option-label">没有，完全零基础</span></label>
+        <label class="option-item"><input type="radio" name="instrument"><span class="option-label">有一点点，自学过 / 学过一段时间</span></label>
+        <label class="option-item"><input type="radio" name="instrument"><span class="option-label">有基础，能弹奏 / 演奏<span>请在下方填写乐器名称</span></span></label>
+      </div>
+      <input id="f-instrument-other" type="text" placeholder="乐器名称（选了有基础再填）" style="margin-top:8px;">
+    </div>
+    <div style="margin-bottom:16px;">
+      <div style="font-size:12px;color:#888;margin-bottom:8px;">演唱基础？</div>
+      <div class="options-grid col3">
+        <label class="option-item"><input type="radio" name="singing"><span class="option-label">零基础</span></label>
+        <label class="option-item"><input type="radio" name="singing"><span class="option-label">唱着玩，没学过</span></label>
+        <label class="option-item"><input type="radio" name="singing"><span class="option-label">学过声乐 / 练过</span></label>
+      </div>
+    </div>
+    <div style="margin-bottom:16px;">
+      <div style="font-size:12px;color:#888;margin-bottom:8px;">音乐软件（DAW）使用经验？</div>
+      <div class="options-grid col1">
+        <label class="option-item"><input type="radio" name="daw"><span class="option-label">没用过</span></label>
+        <label class="option-item"><input type="radio" name="daw"><span class="option-label">接触过，但不太会用</span></label>
+        <label class="option-item"><input type="radio" name="daw"><span class="option-label">会基本操作，能录音 / 剪辑</span></label>
+        <label class="option-item"><input type="radio" name="daw"><span class="option-label">能独立制作完整作品</span></label>
+      </div>
+    </div>
+    <div class="form-group"><label class="field-label">目前使用或了解的软件（可不填）</label><input id="f-software" type="text" placeholder="例：GarageBand、FL Studio、Logic Pro、Ableton…"></div>
+  </div>
+
+  <hr class="divider">
+
+  <div class="section">
+    <div class="section-header"><span class="section-tag">C</span><span class="section-title">兴趣方向（可多选）</span></div>
+    <div class="options-grid col1">
+      <label class="option-item"><input type="checkbox" name="direction" value="唱作人方向"><span class="option-label">🎤 唱作人方向<span>学写词、写旋律、编曲，在录音棚录制自己的作品</span></span></label>
+      <label class="option-item"><input type="checkbox" name="direction" value="录音混音方向"><span class="option-label">🎚️ 录音混音方向<span>学录音技术、人声后期处理、混音调音、母带制作</span></span></label>
+      <label class="option-item"><input type="checkbox" name="direction" value="编曲制作方向"><span class="option-label">🎹 编曲制作方向<span>学编曲、音色设计、DAW 深度操作，做出完整伴奏</span></span></label>
+      <label class="option-item"><input type="checkbox" name="direction" value="AI音乐制作"><span class="option-label">🤖 AI 音乐制作<span>Suno 等 AI 工具应用，AI 辅助创作与商业化落地</span></span></label>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <div class="section" id="sec-d">
+    <div class="section-header"><span class="section-tag">D</span><span class="section-title">具体想学的内容</span></div>
+    <div class="direction-card">
+      <div class="direction-card-header"><input type="checkbox"><div><div class="direction-name">🎤 唱作人方向</div><div class="direction-desc">勾选最想突破的技能点</div></div></div>
+      <div class="direction-skills">
+        <label class="skill-item"><input type="checkbox"> 歌词创作思路与技巧</label>
+        <label class="skill-item"><input type="checkbox"> 旋律创作与哼唱转谱</label>
+        <label class="skill-item"><input type="checkbox"> 基础编曲（鼓/Bass/和弦）</label>
+        <label class="skill-item"><input type="checkbox"> 人声录制技巧（棚录）</label>
+        <label class="skill-item"><input type="checkbox"> 人声后期（Autotune/Melodyne）</label>
+        <label class="skill-item"><input type="checkbox"> 发行上架（流媒体平台）</label>
+        <label class="skill-item"><input type="checkbox"> 抖音/小红书推广作品</label>
+        <label class="skill-item"><input type="checkbox"> 个人音乐品牌与包装</label>
+      </div>
+    </div>
+    <div class="direction-card">
+      <div class="direction-card-header"><input type="checkbox"><div><div class="direction-name">🎚️ 录音混音方向</div><div class="direction-desc">勾选最想突破的技能点</div></div></div>
+      <div class="direction-skills">
+        <label class="skill-item"><input type="checkbox"> 录音棚设备认识与操作</label>
+        <label class="skill-item"><input type="checkbox"> 话筒选型与摆位</label>
+        <label class="skill-item"><input type="checkbox"> 增益结构与信号流</label>
+        <label class="skill-item"><input type="checkbox"> 人声调音（修节奏/修音准）</label>
+        <label class="skill-item"><input type="checkbox"> EQ 与压缩器使用</label>
+        <label class="skill-item"><input type="checkbox"> 混音平衡与声场定位</label>
+        <label class="skill-item"><input type="checkbox"> 效果器（混响/延迟/饱和）</label>
+        <label class="skill-item"><input type="checkbox"> 母带处理与响度标准</label>
+      </div>
+    </div>
+    <div class="direction-card">
+      <div class="direction-card-header"><input type="checkbox"><div><div class="direction-name">🎹 编曲制作方向</div><div class="direction-desc">勾选最想突破的技能点</div></div></div>
+      <div class="direction-skills">
+        <label class="skill-item"><input type="checkbox"> DAW 软件从零上手</label>
+        <label class="skill-item"><input type="checkbox"> MIDI 编写与节奏制作</label>
+        <label class="skill-item"><input type="checkbox"> 音色库与采样使用</label>
+        <label class="skill-item"><input type="checkbox"> 流行/国风/电子编曲</label>
+        <label class="skill-item"><input type="checkbox"> 说唱 Beat 制作</label>
+        <label class="skill-item"><input type="checkbox"> 影视/广告配乐思路</label>
+        <label class="skill-item"><input type="checkbox"> 编曲参考分析（拆歌）</label>
+        <label class="skill-item"><input type="checkbox"> 商业接单与报价逻辑</label>
+      </div>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <div class="section">
+    <div class="section-header"><span class="section-tag">E</span><span class="section-title">学习目标——想达到什么程度？</span></div>
+    <div class="options-grid col1">
+      <label class="option-item"><input type="radio" name="goal"><span class="option-label">🎈 兴趣爱好<span>玩着学，能做出自己喜欢的东西就好</span></span></label>
+      <label class="option-item"><input type="radio" name="goal"><span class="option-label">🎵 完成自己的作品<span>录一首歌、做出完整伴奏，发给朋友听</span></span></label>
+      <label class="option-item"><input type="radio" name="goal"><span class="option-label">🚀 达到数字发行水平<span>质量能上架流媒体平台，正式对外发布</span></span></label>
+      <label class="option-item"><input type="radio" name="goal"><span class="option-label">💼 职业发展 / 接单变现<span>以音乐为副业或主业，能为客户制作商业作品</span></span></label>
+    </div>
+    <div class="form-group" style="margin-top:14px;"><label class="field-label">有没有具体的目标作品或事件？（选填）</label><input id="f-goal-detail" type="text" placeholder="例：生日前录一首歌 / 做出第一首 Beat"></div>
+  </div>
+
+  <hr class="divider">
+
+  <div class="section">
+    <div class="section-header"><span class="section-tag">F</span><span class="section-title">学习安排偏好</span></div>
+    <div class="form-group" style="margin-bottom:14px;">
+      <label class="field-label">上课形式</label>
+      <div class="options-grid col3" style="margin-top:8px;">
+        <label class="option-item"><input type="radio" name="format"><span class="option-label">线下（到棚）</span></label>
+        <label class="option-item"><input type="radio" name="format"><span class="option-label">线上视频</span></label>
+        <label class="option-item"><input type="radio" name="format"><span class="option-label">都可以</span></label>
+      </div>
+    </div>
+    <div class="form-group" style="margin-bottom:14px;">
+      <label class="field-label">课程类型偏好</label>
+      <div class="options-grid" style="margin-top:8px;">
+        <label class="option-item"><input type="radio" name="course-type"><span class="option-label">先体验单课</span></label>
+        <label class="option-item"><input type="radio" name="course-type"><span class="option-label">直接系统课程</span></label>
+        <label class="option-item"><input type="radio" name="course-type"><span class="option-label">项目制（完整作品）</span></label>
+        <label class="option-item"><input type="radio" name="course-type"><span class="option-label">老师推荐就行</span></label>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="field-label">方便上课的时间段</label>
+        <div class="options-grid col1" style="margin-top:8px;">
+          <label class="option-item"><input type="checkbox" name="time"><span class="option-label">工作日白天</span></label>
+          <label class="option-item"><input type="checkbox" name="time"><span class="option-label">工作日晚上</span></label>
+          <label class="option-item"><input type="checkbox" name="time"><span class="option-label">周末全天</span></label>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="field-label">上课频率预期</label>
+        <div class="options-grid col1" style="margin-top:8px;">
+          <label class="option-item"><input type="radio" name="freq"><span class="option-label">每周 1 次</span></label>
+          <label class="option-item"><input type="radio" name="freq"><span class="option-label">每周 2 次</span></label>
+          <label class="option-item"><input type="radio" name="freq"><span class="option-label">灵活安排</span></label>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <div class="section">
+    <div class="section-header"><span class="section-tag">G</span><span class="section-title">预算参考范围</span></div>
+    <p style="font-size:11px;color:#555;margin-bottom:12px;">仅供匹配合适方案参考，不作为承诺</p>
+    <div class="options-grid col3">
+      <label class="option-item"><input type="radio" name="budget"><span class="option-label">3000–5000元<span>短期课程</span></span></label>
+      <label class="option-item"><input type="radio" name="budget"><span class="option-label">5000–8000元<span>系统课程</span></span></label>
+      <label class="option-item"><input type="radio" name="budget"><span class="option-label">10000元以上<span>定制课程</span></span></label>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <div class="section">
+    <div class="section-header"><span class="section-tag">H</span><span class="section-title">补充说明</span></div>
+    <div class="form-group" style="margin-bottom:14px;"><label class="field-label">你最想解决的一个问题是什么？</label><textarea id="f-problem" placeholder="直接说，越具体越好…"></textarea></div>
+    <div class="form-group" style="margin-bottom:14px;"><label class="field-label">有没有喜欢的歌手 / 参考风格？</label><textarea id="f-style" placeholder="发几个歌名或艺人名最直接…" style="min-height:56px;"></textarea></div>
+    <div class="form-group"><label class="field-label">其他想说的</label><textarea id="f-other" placeholder="顾虑、期望、特别需求都可以写…" style="min-height:56px;"></textarea></div>
+  </div>
+
+  <div class="footer">
+    <div class="footer-note">
+      填写完成后点击下方按钮生成截图<br>
+      长按图片保存到相册 → 发给老师即可 ✨<br><br>
+      📞 微信：@秦柒柒MIA &nbsp;|&nbsp; 📍 SEVEN录音棚·萌果音乐工作室
+    </div>
+    <div class="btn-group">
+      <button class="btn btn-primary" id="saveBtn" onclick="saveForm()">生成并保存表单图片</button>
+    </div>
+  </div>
+</div>
+
+<script>
+function collectData() {
+  const v = id => (document.getElementById(id)?.value || '').trim() || '—';
+  const radio = name => {
+    const el = document.querySelector('input[name="' + name + '"]:checked');
+    if (!el) return '—';
+    const lbl = el.closest('.option-item')?.querySelector('.option-label');
+    return lbl ? lbl.childNodes[0].textContent.trim() : '—';
+  };
+  const checks = name => {
+    const els = [...document.querySelectorAll('input[name="' + name + '"]:checked')];
+    return els.map(e => {
+      const item = e.closest('.option-item');
+      return item?.querySelector('.option-label')?.childNodes[0]?.textContent?.trim() || '';
+    }).filter(Boolean).join('、') || '—';
+  };
+  const skillChecks = () => {
+    const els = [...document.querySelectorAll('#sec-d .skill-item input:checked')];
+    return els.map(e => (e.closest('.skill-item')?.textContent || '').trim()).filter(Boolean).join('、') || '—';
+  };
+  const instrOther = (document.getElementById('f-instrument-other')?.value || '').trim();
+  const instrBase = radio('instrument');
+  const instr = instrBase === '—' ? '—' : (instrOther ? instrBase + '（' + instrOther + '）' : instrBase);
+  return {
+    name: v('f-name'), tel: v('f-tel'), age: v('f-age'), city: v('f-city'),
+    instrument: instr, singing: radio('singing'), daw: radio('daw'), software: v('f-software'),
+    directions: checks('direction'), skills: skillChecks(),
+    goal: radio('goal'), goalDetail: v('f-goal-detail'),
+    format: radio('format'), courseType: radio('course-type'),
+    timeSlots: checks('time'), freq: radio('freq'), budget: radio('budget'),
+    problem: v('f-problem'), style: v('f-style'), other: v('f-other'),
+    date: new Date().toLocaleDateString('zh-CN')
+  };
+}
+
+function buildSnapshotHTML(d) {
+  const sec = (tag, title, rows) =>
+    '<div style="margin:0 0 14px;padding:12px 14px;background:#f8f8f8;border-left:3px solid #c8a96e;border-radius:4px;">' +
+    '<div style="font-size:9px;letter-spacing:1px;color:#999;margin-bottom:8px;font-weight:600;">' + tag + ' · ' + title + '</div>' + rows + '</div>';
+  const row = (label, val) =>
+    '<div style="margin:5px 0;display:flex;gap:6px;">' +
+    '<span style="color:#999;font-size:12px;flex-shrink:0;min-width:76px;">' + label + '：</span>' +
+    '<span style="color:#1a1a1a;font-size:12px;line-height:1.65;">' + (val || '—') + '</span></div>';
+  return '<div style="text-align:center;padding:18px 0 20px;border-bottom:2px solid #c8a96e;margin-bottom:16px;">' +
+    '<div style="font-size:9px;letter-spacing:3px;color:#aaa;margin-bottom:8px;">SEVEN STUDIO</div>' +
+    '<div style="font-size:20px;font-weight:700;color:#111;">学员需求测评表</div>' +
+    '<div style="font-size:11px;color:#bbb;margin-top:6px;">填写日期：' + d.date + '</div></div>' +
+    sec('A','基本信息', row('姓名',d.name)+row('联系电话',d.tel)+row('年龄段',d.age)+row('城市',d.city)) +
+    sec('B','音乐基础', row('乐器基础',d.instrument)+row('演唱基础',d.singing)+row('DAW经验',d.daw)+row('常用软件',d.software)) +
+    sec('C','兴趣方向', row('',d.directions)) +
+    sec('D','想学的技能', row('',d.skills)) +
+    sec('E','学习目标', row('目标程度',d.goal)+row('目标作品',d.goalDetail)) +
+    sec('F','课程安排', row('上课形式',d.format)+row('课程类型',d.courseType)+row('可用时间',d.timeSlots)+row('上课频率',d.freq)) +
+    sec('G','预算范围', row('',d.budget)) +
+    sec('H','补充说明', row('主要问题',d.problem)+row('参考风格',d.style)+row('其他',d.other)) +
+    '<div style="text-align:center;margin-top:20px;padding-top:14px;border-top:1px solid #eee;font-size:10px;color:#ccc;">SEVEN录音棚 · 萌果音乐工作室 · 微信：@秦柒柒MIA</div>';
+}
+
+async function saveForm() {
+  const btn = document.getElementById('saveBtn');
+  btn.disabled = true;
+  btn.textContent = '生成中，请稍候…';
+  try {
+    const data = collectData();
+    const snap = document.createElement('div');
+    const w = Math.min(window.innerWidth - 32, 680);
+    snap.style.cssText =
+      'position:absolute;left:-9999px;top:0;width:' + w + 'px;background:#ffffff;color:#1a1a1a;padding:24px;' +
+      "font-family:'PingFang SC','Microsoft YaHei',Helvetica,sans-serif;font-size:13px;line-height:1.7;box-sizing:border-box;";
+    snap.innerHTML = buildSnapshotHTML(data);
+    document.body.appendChild(snap);
+    const canvas = await html2canvas(snap, {
+      backgroundColor: '#ffffff',
+      scale: Math.min(window.devicePixelRatio || 2, 2.5),
+      useCORS: true, logging: false,
+      width: snap.offsetWidth, height: snap.offsetHeight
+    });
+    document.body.removeChild(snap);
+    document.getElementById('result-img').src = canvas.toDataURL('image/jpeg', 0.92);
+    document.getElementById('result-modal').classList.add('show');
+    window.scrollTo(0, 0);
+  } catch(err) {
+    alert('生成失败，请直接截图发给老师。\n' + err.message);
+  }
+  btn.disabled = false;
+  btn.textContent = '生成并保存表单图片';
+}
+</script>
+
+</body>
+</html>
